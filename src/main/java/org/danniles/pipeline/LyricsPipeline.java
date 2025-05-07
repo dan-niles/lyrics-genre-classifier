@@ -1,8 +1,9 @@
 package org.danniles.pipeline;
 
-import org.danniles.GenrePrediction;
-import java.util.Map;
 import org.apache.spark.ml.tuning.CrossValidatorModel;
+import org.danniles.GenrePrediction;
+
+import java.util.Map;
 
 public interface LyricsPipeline {
 

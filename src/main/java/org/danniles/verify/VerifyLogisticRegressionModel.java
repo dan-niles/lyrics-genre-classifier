@@ -7,7 +7,7 @@ import scala.Tuple2;
 
 public class VerifyLogisticRegressionModel implements PairFunction<LabeledPoint, Object, Object> {
 
-    private LogisticRegressionModel model;
+    private final LogisticRegressionModel model;
 
     public VerifyLogisticRegressionModel(LogisticRegressionModel logisticRegressionModel) {
         this.model = logisticRegressionModel;

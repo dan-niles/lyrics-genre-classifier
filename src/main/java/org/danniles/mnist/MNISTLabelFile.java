@@ -4,7 +4,9 @@ package org.danniles.mnist;//---------------------------------------------------
 //   Author: Douglas Eck  deck@unm.edu
 //------------------------------------------------------------
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 public class MNISTLabelFile extends RandomAccessFile {
   public int count;
   public int rows;

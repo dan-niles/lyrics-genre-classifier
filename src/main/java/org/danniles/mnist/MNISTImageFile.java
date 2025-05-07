@@ -3,7 +3,10 @@ package org.danniles.mnist;//---------------------------------------------------
 //   Written for JDK 1.1 API 
 //   Author: Douglas Eck  deck@unm.edu
 //------------------------------------------------------------
-import java.io.*;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class MNISTImageFile extends RandomAccessFile {
   public int count;

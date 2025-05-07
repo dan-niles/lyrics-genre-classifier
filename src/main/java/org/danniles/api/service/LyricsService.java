@@ -1,17 +1,21 @@
 package org.danniles.api.service;
 
+import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.danniles.GenrePrediction;
 import org.danniles.pipeline.LyricsPipeline;
-import java.util.Map;
-import org.apache.spark.ml.tuning.CrossValidatorModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
-@Component
+import java.util.Map;
+
+@Service
 public class LyricsService {
 
-    @Autowired
-    private LyricsPipeline pipeline;
+    private final LyricsPipeline pipeline;
+
+    public LyricsService(@Qualifier("word2VecPipeline") LyricsPipeline pipeline) {
+        this.pipeline = pipeline;
+    }
 
     public Map<String, Object> classifyLyrics() {
         CrossValidatorModel model = pipeline.classify();
@@ -21,5 +25,4 @@ public class LyricsService {
     public GenrePrediction predictGenre(final String unknownLyrics) {
         return pipeline.predict(unknownLyrics);
     }
-
 }

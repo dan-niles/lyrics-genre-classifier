@@ -1,9 +1,5 @@
 package org.danniles.pipeline;
 
-import org.danniles.map.Column;
-import static org.danniles.map.Column.*;
-import org.danniles.transformer.*;
-import java.util.Map;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
@@ -11,19 +7,30 @@ import org.apache.spark.ml.Transformer;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassifier;
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator;
-import org.apache.spark.ml.feature.*;
+import org.apache.spark.ml.feature.StopWordsRemover;
+import org.apache.spark.ml.feature.Tokenizer;
+import org.apache.spark.ml.feature.Word2Vec;
+import org.apache.spark.ml.feature.Word2VecModel;
 import org.apache.spark.ml.param.ParamMap;
 import org.apache.spark.ml.tuning.CrossValidator;
 import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.ml.tuning.ParamGridBuilder;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.danniles.map.Column;
+import org.danniles.transformer.*;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static org.danniles.map.Column.*;
 
 @Component("FeedForwardNeuralNetworkPipeline")
 public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
     public CrossValidatorModel classify() {
-        Dataset sentences = readLyrics();
+        Dataset<Row> sentences = readLyrics();
 
         // Remove all punctuation symbols.
         Cleanser cleanser = new Cleanser();
@@ -74,8 +81,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{16})
-                .addGrid(word2Vec.vectorSize(), new int[] {300})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {100})
+                .addGrid(word2Vec.vectorSize(), new int[]{300})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[]{100})
                 .build();
 
         CrossValidator crossValidator = new CrossValidator()
@@ -99,8 +106,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Transformer[] stages = bestModel.stages();
 
         modelStatistics.put("Sentences in verse", ((Verser) stages[7]).getSentencesInVerse());
-        modelStatistics.put("Word2Vec vocabulary", ((Word2VecModel) stages[8]).getVectors().count());
-        modelStatistics.put("Vector size", ((Word2VecModel) stages[8]).getVectorSize());
+        modelStatistics.put("Word2Vec vocabulary", Optional.of(((Word2VecModel) stages[8]).getVectors().count()));
+        modelStatistics.put("Vector size", Optional.of(((Word2VecModel) stages[8]).getVectorSize()));
         modelStatistics.put("Weights", ((MultilayerPerceptronClassificationModel) stages[9]).weights());
         printModelStatistics(modelStatistics);
 
@@ -111,5 +118,4 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
     protected String getModelDirectory() {
         return getLyricsModelDirectoryPath() + "/feed-forward-neural-network/";
     }
-
 }

@@ -1,9 +1,9 @@
 package org.danniles.map;
 
+import opennlp.tools.stemmer.PorterStemmer;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
-import opennlp.tools.stemmer.PorterStemmer;
 
 public class StemmingFunction implements MapFunction<Row, Row> {
 

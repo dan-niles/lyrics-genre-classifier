@@ -1,8 +1,5 @@
 package org.danniles.transformer;
 
-import org.danniles.map.Column;
-import java.io.IOException;
-import java.util.UUID;
 import org.apache.spark.ml.Transformer;
 import org.apache.spark.ml.param.IntParam;
 import org.apache.spark.ml.param.ParamMap;
@@ -12,12 +9,15 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.danniles.map.Column;
 import scala.Option;
+
+import java.io.IOException;
+import java.util.UUID;
 
 public class Verser extends Transformer implements MLWritable {
 
-    private String verseId = "verseId";
-    private String uid;
+    private final String uid;
 
     public Verser(String uid) {
         this.uid = uid;
@@ -29,6 +29,7 @@ public class Verser extends Transformer implements MLWritable {
 
     @Override
     public Dataset<Row> transform(Dataset<?> sentences) {
+        String verseId = "verseId";
         Dataset<Row> verses = sentences.withColumn(
                 verseId,
                 functions.floor(functions.column(Column.ROW_NUMBER.getName()).minus(1).divide(getSentencesInVerse())).plus(1)

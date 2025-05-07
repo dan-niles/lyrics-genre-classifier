@@ -1,21 +1,23 @@
 package org.danniles.transformer;
 
-import org.danniles.map.Column;
-import java.io.IOException;
-import java.util.UUID;
 import org.apache.spark.ml.Transformer;
 import org.apache.spark.ml.param.ParamMap;
 import org.apache.spark.ml.util.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import static org.apache.spark.sql.functions.column;
-import static org.apache.spark.sql.functions.explode;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.danniles.map.Column;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import static org.apache.spark.sql.functions.column;
+import static org.apache.spark.sql.functions.explode;
 
 public class Exploder extends Transformer implements MLWritable {
 
-    private String uid;
+    private final String uid;
 
     public Exploder(String uid) {
         this.uid = uid;

@@ -1,17 +1,18 @@
 package org.danniles.transformer;
 
-import org.danniles.map.Column;
-import org.danniles.map.StemmingFunction;
-import java.io.IOException;
-import java.util.UUID;
 import org.apache.spark.ml.Transformer;
 import org.apache.spark.ml.param.ParamMap;
 import org.apache.spark.ml.util.*;
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.danniles.map.Column;
+import org.danniles.map.StemmingFunction;
+
+import java.io.IOException;
+import java.util.UUID;
 
 public class Stemmer extends Transformer implements MLWritable {
 

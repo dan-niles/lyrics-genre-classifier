@@ -1,7 +1,5 @@
 package org.danniles.api;
 
-import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,26 +12,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @PropertySource("classpath:spark.properties")
 @ComponentScan("org.danniles.*")
 public class SparkContextConfiguration {
-
-    @Bean
-    public SparkSession sparkSession() {
-        SparkConf sparkConf = new SparkConf()
-                .setMaster(master)
-                .setAppName(applicationName)
-                .setJars(distributedLibraries)
-                .set("spark.cores.max", coresMax)
-                .set("spark.driver.memory", driverMemory)
-                .set("spark.executor.memory", executorMemory)
-                .set("spark.serializer", serializer)
-                .set("spark.kryoserializer.buffer.max", kryoserializerBufferMax)
-                .set("spark.kryo.registrationRequired", "false")
-                .set("spark.sql.shuffle.partitions", sqlShufflePartitions)
-                .set("spark.default.parallelism", defaultParallelism);
-
-        SparkContext sparkContext = new SparkContext(sparkConf);
-
-        return new SparkSession(sparkContext);
-    }
 
     @Value("${spark.master}")
     private String master;
@@ -66,13 +44,24 @@ public class SparkContextConfiguration {
     private String kryoserializerBufferMax;
 
     @Bean
-    // Static is extremely important here.
-    // It should be created before @Configuration as it is also component.
+    public SparkSession sparkSession() {
+        return SparkSession.builder()
+                .appName(applicationName)
+                .master(master)
+                .config("spark.cores.max", coresMax)
+                .config("spark.driver.memory", driverMemory)
+                .config("spark.executor.memory", executorMemory)
+                .config("spark.serializer", serializer)
+                .config("spark.kryoserializer.buffer.max", kryoserializerBufferMax)
+                .config("spark.sql.shuffle.partitions", sqlShufflePartitions)
+                .config("spark.default.parallelism", defaultParallelism)
+                .config("spark.kryo.registrationRequired", "false")
+                .config("spark.jars", String.join(",", distributedLibraries))
+                .getOrCreate(); // This ensures SparkSession is initialized correctly
+    }
+
+    @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
-
 }
-
-
-

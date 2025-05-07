@@ -7,7 +7,7 @@ import scala.Tuple2;
 
 public class VerifySVMModel implements PairFunction<LabeledPoint, Object, Object> {
 
-    private SVMModel model;
+    private final SVMModel model;
 
     public VerifySVMModel(SVMModel svmModel) {
         this.model = svmModel;

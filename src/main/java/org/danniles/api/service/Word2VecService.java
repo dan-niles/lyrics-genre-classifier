@@ -1,18 +1,21 @@
 package org.danniles.api.service;
 
+import org.danniles.pipeline.Word2VecPipeline;
 import org.danniles.word2vec.Similarity;
 import org.danniles.word2vec.Synonym;
-import org.danniles.pipeline.Word2VecPipeline;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+@Service
 public class Word2VecService {
 
-    @Autowired
-    private Word2VecPipeline word2VecLyricsPipeline;
+    private final Word2VecPipeline word2VecLyricsPipeline;
+
+    public Word2VecService(Word2VecPipeline word2VecLyricsPipeline) {
+        this.word2VecLyricsPipeline = word2VecLyricsPipeline;
+    }
 
     public Map<String, Object> train() {
         return word2VecLyricsPipeline.train();

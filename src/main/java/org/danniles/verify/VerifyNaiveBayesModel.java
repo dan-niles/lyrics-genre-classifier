@@ -7,7 +7,7 @@ import scala.Tuple2;
 
 public class VerifyNaiveBayesModel implements PairFunction<LabeledPoint, Object, Object> {
 
-    private NaiveBayesModel model;
+    private final NaiveBayesModel model;
 
     public VerifyNaiveBayesModel(NaiveBayesModel naiveBayesModel) {
         this.model = naiveBayesModel;

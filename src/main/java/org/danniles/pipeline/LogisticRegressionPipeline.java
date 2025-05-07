@@ -1,8 +1,5 @@
 package org.danniles.pipeline;
 
-import static org.danniles.map.Column.*;
-import org.danniles.transformer.*;
-import java.util.Map;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
@@ -20,7 +17,12 @@ import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.ml.tuning.ParamGridBuilder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.danniles.transformer.*;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+import static org.danniles.map.Column.*;
 
 @Component("LogisticRegressionPipeline")
 public class LogisticRegressionPipeline extends CommonLyricsPipeline {
@@ -29,7 +31,6 @@ public class LogisticRegressionPipeline extends CommonLyricsPipeline {
         Dataset<Row> sentences = readLyrics();
 
         Cleanser cleanser = new Cleanser();
-
         Numerator numerator = new Numerator();
 
         Tokenizer tokenizer = new Tokenizer()
@@ -41,37 +42,35 @@ public class LogisticRegressionPipeline extends CommonLyricsPipeline {
                 .setOutputCol(FILTERED_WORDS.getName());
 
         Exploder exploder = new Exploder();
-
         Stemmer stemmer = new Stemmer();
-
         Uniter uniter = new Uniter();
         Verser verser = new Verser();
 
         Word2Vec word2Vec = new Word2Vec()
-                                    .setInputCol(VERSE.getName())
-                                    .setOutputCol("features")
-                                    .setMinCount(0);
+                .setInputCol(VERSE.getName())
+                .setOutputCol("features")
+                .setMinCount(0);
 
         LogisticRegression logisticRegression = new LogisticRegression();
 
-        Pipeline pipeline = new Pipeline().setStages(
-                new PipelineStage[]{
-                        cleanser,
-                        numerator,
-                        tokenizer,
-                        stopWordsRemover,
-                        exploder,
-                        stemmer,
-                        uniter,
-                        verser,
-                        word2Vec,
-                        logisticRegression});
+        Pipeline pipeline = new Pipeline().setStages(new PipelineStage[]{
+                cleanser,
+                numerator,
+                tokenizer,
+                stopWordsRemover,
+                exploder,
+                stemmer,
+                uniter,
+                verser,
+                word2Vec,
+                logisticRegression
+        });
 
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{4, 8, 16})
-                .addGrid(word2Vec.vectorSize(), new int[] {100, 200, 300})
-                .addGrid(logisticRegression.regParam(), new double[] {0.01D})
-                .addGrid(logisticRegression.maxIter(), new int[] {100, 200})
+                .addGrid(word2Vec.vectorSize(), new int[]{100, 200, 300})
+                .addGrid(logisticRegression.regParam(), new double[]{0.01D})
+                .addGrid(logisticRegression.maxIter(), new int[]{100, 200})
                 .build();
 
         CrossValidator crossValidator = new CrossValidator()
@@ -83,7 +82,6 @@ public class LogisticRegressionPipeline extends CommonLyricsPipeline {
         CrossValidatorModel model = crossValidator.fit(sentences);
 
         saveModel(model, getModelDirectory());
-
         return model;
     }
 
@@ -100,7 +98,6 @@ public class LogisticRegressionPipeline extends CommonLyricsPipeline {
         modelStatistics.put("Max iterations", ((LogisticRegressionModel) stages[9]).getMaxIter());
 
         printModelStatistics(modelStatistics);
-
         return modelStatistics;
     }
 
@@ -108,5 +105,4 @@ public class LogisticRegressionPipeline extends CommonLyricsPipeline {
     protected String getModelDirectory() {
         return getLyricsModelDirectoryPath() + "/logistic-regression/";
     }
-
 }

@@ -1,19 +1,21 @@
 package org.danniles.pipeline;
 
-import static org.danniles.map.Column.*;
-import org.danniles.MLService;
-import org.danniles.Genre;
-import org.danniles.GenrePrediction;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.linalg.DenseVector;
 import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.sql.*;
+import org.danniles.Genre;
+import org.danniles.GenrePrediction;
+import org.danniles.MLService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.danniles.map.Column.*;
 
 public abstract class CommonLyricsPipeline implements LyricsPipeline {
 
@@ -31,9 +33,8 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
 
     @Override
     public GenrePrediction predict(final String unknownLyrics) {
-        String lyrics[] = unknownLyrics.split("\\r?\\n");
-        Dataset<String> lyricsDataset = sparkSession.createDataset(Arrays.asList(lyrics),
-           Encoders.STRING());
+        String[] lyrics = unknownLyrics.split("\\r?\\n");
+        Dataset<String> lyricsDataset = sparkSession.createDataset(Arrays.asList(lyrics), Encoders.STRING());
 
         Dataset<Row> unknownLyricsDataset = lyricsDataset
                 .withColumn(LABEL.getName(), functions.lit(Genre.UNKNOWN.getValue()))
@@ -64,11 +65,9 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
     }
 
     Dataset<Row> readLyrics() {
-        Dataset input = readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.METAL)
-                                                .union(readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.POP));
-        // Reduce the input amount of partition minimal amount (spark.default.parallelism OR 2, whatever is less)
+        Dataset<Row> input = readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.METAL)
+                .union(readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.POP));
         input = input.coalesce(sparkSession.sparkContext().defaultMinPartitions()).cache();
-        // Force caching.
         input.count();
 
         return input;
@@ -88,14 +87,11 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
         rawLyrics = rawLyrics.filter(rawLyrics.col(VALUE.getName()).notEqual(""));
         rawLyrics = rawLyrics.filter(rawLyrics.col(VALUE.getName()).contains(" "));
 
-        // Add source filename column as a unique id.
-        Dataset<Row> lyrics = rawLyrics.withColumn(ID.getName(), functions.input_file_name());
-
-        return lyrics;
+        return rawLyrics.withColumn(ID.getName(), functions.input_file_name());
     }
 
     private Genre getGenre(Double value) {
-        for (Genre genre: Genre.values()){
+        for (Genre genre : Genre.values()) {
             if (genre.getValue().equals(value)) {
                 return genre;
             }

@@ -7,7 +7,7 @@ import scala.Tuple2;
 
 public class VerifyLinearRegressionModel implements PairFunction<LabeledPoint, Double, Double> {
 
-    private LinearRegressionModel model;
+    private final LinearRegressionModel model;
 
     public VerifyLinearRegressionModel(LinearRegressionModel model) {
         this.model = model;
