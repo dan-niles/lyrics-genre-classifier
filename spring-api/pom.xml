@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--suppress ALL -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -67,11 +68,18 @@
             <artifactId>logback-classic</artifactId>
             <version>1.5.18</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-mllib_2.13</artifactId>
             <version>3.5.5</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -82,7 +90,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.4.5</version>
                 <configuration>
-                    <mainClass>org.danniles.ApplicationConfiguration</mainClass>
+                    <mainClass>org.danniles.api.ApplicationConfiguration</mainClass>
                 </configuration>
                 <executions>
                     <execution>
