@@ -1,15 +1,38 @@
 package org.danniles.driver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Genre {
 
-    METAL("Metal \\m//", 0D),
+    POP("Pop", 0D),
 
-    POP("Pop <(^.^)/", 1D),
+    COUNTRY("Country", 1D),
+
+    BLUES("Blues", 2D),
+
+    JAZZ("Jazz", 3D),
+
+    REGGAE("Reggae", 4D),
+
+    ROCK("Rock", 5D),
+
+    HIPHOP("Hip Hop", 6D),
 
     UNKNOWN("Don't know :(", -1D);
 
     private final String name;
     private final Double value;
+
+    private static final Map<String, Genre> NAME_TO_GENRE = new HashMap<>();
+    private static final Map<Double, Genre> VALUE_TO_GENRE = new HashMap<>();
+
+    static {
+        for (Genre genre : values()) {
+            NAME_TO_GENRE.put(genre.name.toLowerCase(), genre);
+            VALUE_TO_GENRE.put(genre.value, genre);
+        }
+    }
 
     Genre(final String name, final Double value) {
         this.name = name;
@@ -24,4 +47,17 @@ public enum Genre {
         return value;
     }
 
+    public static Genre fromName(String name) {
+        if (name == null) {
+            return UNKNOWN;
+        }
+        return NAME_TO_GENRE.getOrDefault(name.trim().toLowerCase(), UNKNOWN);
+    }
+
+    public static Genre fromValue(Double value) {
+        if (value == null) {
+            return UNKNOWN;
+        }
+        return VALUE_TO_GENRE.getOrDefault(value, UNKNOWN);
+    }
 }

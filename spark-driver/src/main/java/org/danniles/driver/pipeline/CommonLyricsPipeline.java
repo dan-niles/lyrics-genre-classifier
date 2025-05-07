@@ -4,6 +4,9 @@ import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.linalg.DenseVector;
 import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.danniles.driver.Genre;
 import org.danniles.driver.GenrePrediction;
 import org.danniles.driver.MLService;
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.danniles.map.Column.*;
+import static org.apache.spark.sql.functions.*;
 
 public abstract class CommonLyricsPipeline implements LyricsPipeline {
 
@@ -65,23 +69,45 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
     }
 
     Dataset<Row> readLyrics() {
-        Dataset<Row> input = readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.METAL)
-                .union(readLyricsForGenre(lyricsTrainingSetDirectoryPath, Genre.POP));
-        // Reduce the input amount of partition minimal amount (spark.default.parallelism OR 2, whatever is less)
-        input = input.coalesce(sparkSession.sparkContext().defaultMinPartitions()).cache();
-        // Force caching.
-        input.count();
+        // Define explicit schema for the required columns
+        StructType schema = DataTypes.createStructType(new StructField[] {
+                DataTypes.createStructField("artist_name", DataTypes.StringType, true),
+                DataTypes.createStructField("track_name", DataTypes.StringType, true),
+                DataTypes.createStructField("release_date", DataTypes.StringType, true),
+                DataTypes.createStructField("genre", DataTypes.StringType, true),
+                DataTypes.createStructField("lyrics", DataTypes.StringType, true)
+        });
 
-        return input;
+        // Read CSV with defined schema and options
+        Dataset<Row> rawData = sparkSession.read()
+                .option("header", "true")
+                .option("mode", "DROPMALFORMED")
+                .option("nullValue", "")
+                .option("multiLine", "true") // Handle multi-line lyrics fields
+                .option("escape", "\"")
+                .option("quote", "\"")
+                .schema(schema)
+                .csv(lyricsTrainingSetDirectoryPath);
+
+        // Filter out records with null or empty lyrics
+        Dataset<Row> filteredData = rawData
+                .filter("lyrics IS NOT NULL AND length(trim(lyrics)) > 0")
+                .withColumn("release_date", year(to_date(col("release_date"), "yyyy-MM-dd"))) // Extract year from date
+                .withColumnRenamed("release_date", "year");
+
+        // Convert genre column to numeric label for ML
+        Dataset<Row> labeledData = filteredData
+                .withColumn(LABEL.getName(), genreToLabel(filteredData.col("genre")))
+                .withColumn(ID.getName(), functions.monotonically_increasing_id().cast("string"));
+
+        // Cache the dataset for performance
+        return labeledData.coalesce(sparkSession.sparkContext().defaultMinPartitions()).cache();
     }
 
-    private Dataset<Row> readLyricsForGenre(String inputDirectory, Genre genre) {
-        Dataset<Row> lyrics = readLyrics(inputDirectory, genre.name().toLowerCase() + "/*");
-        Dataset<Row> labeledLyrics = lyrics.withColumn(LABEL.getName(), functions.lit(genre.getValue()));
-
-        System.out.println(genre.name() + " music sentences = " + lyrics.count());
-
-        return labeledLyrics;
+    private Column genreToLabel(Column genreCol) {
+        sparkSession.udf().register("genreToLabelUDF", (String genreName) ->
+                Genre.fromName(genreName).getValue(), DataTypes.DoubleType);
+        return functions.callUDF("genreToLabelUDF", genreCol);
     }
 
     private Dataset<Row> readLyrics(String inputDirectory, String path) {
@@ -90,7 +116,6 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
         rawLyrics = rawLyrics.filter(rawLyrics.col(VALUE.getName()).contains(" "));
 
         // Add source filename column as a unique id.
-
         return rawLyrics.withColumn(ID.getName(), functions.input_file_name());
     }
 

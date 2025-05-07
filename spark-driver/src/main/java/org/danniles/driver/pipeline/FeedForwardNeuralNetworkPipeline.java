@@ -6,7 +6,7 @@ import org.apache.spark.ml.PipelineStage;
 import org.apache.spark.ml.Transformer;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassifier;
-import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator;
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.StopWordsRemover;
 import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.Word2Vec;
@@ -17,6 +17,7 @@ import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.ml.tuning.ParamGridBuilder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.danniles.driver.Genre;
 import org.danniles.driver.transformer.*;
 import org.danniles.map.Column;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,14 @@ import static org.danniles.map.Column.*;
 public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
     public CrossValidatorModel classify() {
-        Dataset<Row> sentences = readLyrics();
+        Dataset<Row> lyricsDataset = readLyrics();
+
+        // Create a temporary view of the dataset for use in other methods
+        lyricsDataset.createOrReplaceTempView("lyrics_dataset");
+
+        // Get the number of genres from the Genre enum (excluding UNKNOWN)
+        int numGenres = Genre.values().length - 1; // Subtract 1 to exclude UNKNOWN
+        System.out.println("Number of genres to classify: " + numGenres);
 
         // Remove all punctuation symbols.
         Cleanser cleanser = new Cleanser();
@@ -57,12 +65,19 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Verser verser = new Verser();
 
         // Create model.
-        Word2Vec word2Vec = new Word2Vec().setInputCol(Column.VERSE.getName()).setOutputCol("features").setMinCount(0);
+        Word2Vec word2Vec = new Word2Vec()
+                .setInputCol(Column.VERSE.getName())
+                .setOutputCol("features")
+                .setMinCount(0);
+
+        // Configure the neural network for multi-class classification
+        // The output layer size should match the number of genres (7 genres + UNKNOWN)
+        int[] layers = new int[]{300, 100, numGenres};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
                 .setBlockSize(300)
                 .setSeed(1234L)
-                .setLayers(new int[]{300, 50, 2});
+                .setLayers(layers);
 
         Pipeline pipeline = new Pipeline().setStages(
                 new PipelineStage[]{
@@ -79,19 +94,32 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
-                .addGrid(verser.sentencesInVerse(), new int[]{16})
-                .addGrid(word2Vec.vectorSize(), new int[] {300})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {100})
+                .addGrid(verser.sentencesInVerse(), new int[]{16, 24})
+                .addGrid(word2Vec.vectorSize(), new int[] {300, 400})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {100, 200})
                 .build();
+
+        // Use multiclass evaluator with the proper number of classes
+        MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
+                .setLabelCol(LABEL.getName())
+                .setPredictionCol("prediction")
+                .setMetricName("accuracy");
+
+        System.out.println("Genre mapping for classification:");
+        for (Genre genre : Genre.values()) {
+            if (genre != Genre.UNKNOWN) {
+                System.out.println(genre.getName() + " -> " + genre.getValue());
+            }
+        }
 
         CrossValidator crossValidator = new CrossValidator()
                 .setEstimator(pipeline)
-                .setEvaluator(new BinaryClassificationEvaluator().setRawPredictionCol("prediction"))
+                .setEvaluator(evaluator)
                 .setEstimatorParamMaps(paramGrid)
                 .setNumFolds(10);
 
         // Run cross-validation, and choose the best set of parameters.
-        CrossValidatorModel model = crossValidator.fit(sentences);
+        CrossValidatorModel model = crossValidator.fit(lyricsDataset);
 
         saveModel(model, getModelDirectory());
 
@@ -108,6 +136,22 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         modelStatistics.put("Word2Vec vocabulary", ((Word2VecModel) stages[8]).getVectors().count());
         modelStatistics.put("Vector size", ((Word2VecModel) stages[8]).getVectorSize());
         modelStatistics.put("Weights", ((MultilayerPerceptronClassificationModel) stages[9]).weights());
+
+        // Add information about the neural network architecture
+        MultilayerPerceptronClassificationModel nnModel = (MultilayerPerceptronClassificationModel) stages[9];
+        modelStatistics.put("Neural Network Layers", nnModel.getLayers());
+
+        // Add information about genre distribution in the training data if available
+        try {
+            Dataset<Row> currentData = sparkSession.table("lyrics_dataset");
+            if (currentData != null) {
+                Dataset<Row> genreCounts = currentData.groupBy("genre").count().orderBy("count");
+                modelStatistics.put("Genre distribution", genreCounts.collectAsList());
+            }
+        } catch (Exception e) {
+            System.out.println("Could not retrieve genre distribution: " + e.getMessage());
+        }
+
         printModelStatistics(modelStatistics);
 
         return modelStatistics;
@@ -117,5 +161,4 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
     protected String getModelDirectory() {
         return getLyricsModelDirectoryPath() + "/feed-forward-neural-network/";
     }
-
 }
