@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="733cb2bd-62be-4ea3-a676-527985e7e6a1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/spark-driver/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spark-library/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring-api/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/Genre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/GenrePrediction.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/GenrePrediction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/MLService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/MLService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/ApplicationConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/ApplicationConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/SparkContextConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/SparkContextConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/controller/LyricsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/controller/LyricsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/controller/Word2VecController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/controller/Word2VecController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/service/LyricsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/service/LyricsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/api/service/Word2VecService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/service/Word2VecService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/map/Column.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/map/MapRowToMLlibLabeledPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/map/StemmingFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/mnist/MNISTImageFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/mnist/MNISTLabelFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/mnist/MnistUtilityService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/CommonLyricsPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/FeedForwardNeuralNetworkPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/LogisticRegressionPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/LyricsPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/NaiveBayesBagOfWordsPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/NaiveBayesTFIDFPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/RandomForestPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/pipeline/Word2VecPipeline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Cleanser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Exploder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Numerator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Stemmer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Uniter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/transformer/Verser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/verify/VerifyLinearRegressionModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/verify/VerifyLogisticRegressionModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/verify/VerifyNaiveBayesModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/verify/VerifyPredictionsFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/verify/VerifySVMModel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/word2vec/Similarity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/danniles/word2vec/Synonym.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/logback.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/resources/logback.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/spark.properties" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/resources/spark.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <branch-grouping />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="autoscrollToSource" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2wi7PnM3BvDDbeYvb33DL7IsK56" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ApplicationConfiguration.executor": "Run",
+    "Application.org.danniles.ApplicationConfiguration.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Dan/IdeaProjects/lyrics-classifier",
+    "onboarding.tips.debug.path": "C:/Users/Dan/IdeaProjects/lyrics-classifier/spark-distributed-library/src/main/java/org/danniles/Main.java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2724138"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\src\main\resources" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\src\main\java\org\danniles" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\src\main\java\org\danniles\map" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\spring-api\src\main\resources" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\spark-driver\src\main\resources" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\spark-driver\src\main\java\org\danniles" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\spark-distributed-library\src\main\java\org\danniles" />
+      <recent name="C:\Users\Dan\IdeaProjects\lyrics-classifier\spring-api\src\main\java\org\danniles" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.org.danniles.ApplicationConfiguration">
+    <configuration name="ApplicationConfiguration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.danniles.api.ApplicationConfiguration" />
+      <module name="lyrics-classifier" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.danniles.api.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="org.danniles.ApplicationConfiguration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.danniles.ApplicationConfiguration" />
+      <module name="spring-api" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.danniles.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.org.danniles.ApplicationConfiguration" />
+        <item itemvalue="Application.ApplicationConfiguration" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="733cb2bd-62be-4ea3-a676-527985e7e6a1" name="Changes" comment="" />
+      <created>1746512521367</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746512521367</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
