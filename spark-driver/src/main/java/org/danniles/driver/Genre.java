@@ -5,19 +5,19 @@ import java.util.Map;
 
 public enum Genre {
 
-    POP("Pop", 0D),
+    POP("pop", 0D),
 
-    COUNTRY("Country", 1D),
+    COUNTRY("country", 1D),
 
-    BLUES("Blues", 2D),
+    BLUES("blues", 2D),
 
-    JAZZ("Jazz", 3D),
+    JAZZ("jazz", 3D),
 
-    REGGAE("Reggae", 4D),
+    REGGAE("reggae", 4D),
 
-    ROCK("Rock", 5D),
+    ROCK("rock", 5D),
 
-    HIPHOP("Hip Hop", 6D),
+    HIPHOP("hip hop", 6D),
 
     UNKNOWN("Don't know :(", -1D);
 

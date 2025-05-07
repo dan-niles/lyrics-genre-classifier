@@ -9,7 +9,7 @@ public class MapRowToMLlibLabeledPoint implements Function<Row, LabeledPoint> {
 
     @Override
     public LabeledPoint call(Row inputRow) {
-        return new LabeledPoint(inputRow.getAs("label"), (DenseVector) inputRow.getAs("features"));
+        return new LabeledPoint(inputRow.getAs(Column.LABEL.getName()), (DenseVector) inputRow.getAs("features"));
     }
 
 }

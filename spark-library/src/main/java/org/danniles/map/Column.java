@@ -16,7 +16,7 @@ public enum Column {
 
     WORDS("words", DataTypes.createArrayType(DataTypes.StringType)),
 
-    LABEL("label", DataTypes.DoubleType),
+    LABEL("genre", DataTypes.DoubleType),
 
     FILTERED_WORD("filteredWord", DataTypes.StringType),
 

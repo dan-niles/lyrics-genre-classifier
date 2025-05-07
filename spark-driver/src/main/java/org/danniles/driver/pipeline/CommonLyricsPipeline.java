@@ -69,8 +69,11 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
     }
 
     Dataset<Row> readLyrics() {
+        sparkSession.catalog().clearCache();
+
         // Define explicit schema for the required columns
         StructType schema = DataTypes.createStructType(new StructField[] {
+                DataTypes.createStructField("", DataTypes.StringType, true),
                 DataTypes.createStructField("artist_name", DataTypes.StringType, true),
                 DataTypes.createStructField("track_name", DataTypes.StringType, true),
                 DataTypes.createStructField("release_date", DataTypes.StringType, true),
@@ -84,39 +87,45 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
                 .option("mode", "DROPMALFORMED")
                 .option("nullValue", "")
                 .option("multiLine", "true") // Handle multi-line lyrics fields
-                .option("escape", "\"")
-                .option("quote", "\"")
-                .schema(schema)
-                .csv(lyricsTrainingSetDirectoryPath);
+                .csv(lyricsTrainingSetDirectoryPath)
+                .select(
+                    col("artist_name"),
+                    col("track_name"),
+                    col("release_date"),
+                    col("genre"),
+                    col("lyrics")
+                );
+
+        System.out.println("Sample of raw table:");
+        rawData.show(5);
 
         // Filter out records with null or empty lyrics
         Dataset<Row> filteredData = rawData
-                .filter("lyrics IS NOT NULL AND length(trim(lyrics)) > 0")
-                .withColumn("release_date", year(to_date(col("release_date"), "yyyy-MM-dd"))) // Extract year from date
-                .withColumnRenamed("release_date", "year");
+                .filter(col("lyrics").isNotNull().and(length(trim(col("lyrics"))).gt(0)));
 
         // Convert genre column to numeric label for ML
         Dataset<Row> labeledData = filteredData
                 .withColumn(LABEL.getName(), genreToLabel(filteredData.col("genre")))
                 .withColumn(ID.getName(), functions.monotonically_increasing_id().cast("string"));
 
+        System.out.println("Final columns: " + Arrays.toString(labeledData.columns()));
+
+        System.out.println("Sample of label column:");
+        labeledData.select(LABEL.getName()).show(5);
+
         // Cache the dataset for performance
         return labeledData.coalesce(sparkSession.sparkContext().defaultMinPartitions()).cache();
     }
 
     private Column genreToLabel(Column genreCol) {
-        sparkSession.udf().register("genreToLabelUDF", (String genreName) ->
-                Genre.fromName(genreName).getValue(), DataTypes.DoubleType);
-        return functions.callUDF("genreToLabelUDF", genreCol);
-    }
-
-    private Dataset<Row> readLyrics(String inputDirectory, String path) {
-        Dataset<String> rawLyrics = sparkSession.read().textFile(Paths.get(inputDirectory).resolve(path).toString());
-        rawLyrics = rawLyrics.filter(rawLyrics.col(VALUE.getName()).notEqual(""));
-        rawLyrics = rawLyrics.filter(rawLyrics.col(VALUE.getName()).contains(" "));
-
-        // Add source filename column as a unique id.
-        return rawLyrics.withColumn(ID.getName(), functions.input_file_name());
+        return when(col(LABEL.getName()).equalTo(Genre.POP.getName()), Genre.POP.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.COUNTRY.getName()), Genre.COUNTRY.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.BLUES.getName()), Genre.BLUES.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.JAZZ.getName()), Genre.JAZZ.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.REGGAE.getName()), Genre.REGGAE.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.ROCK.getName()), Genre.ROCK.getValue())
+                .when(col(LABEL.getName()).equalTo(Genre.HIPHOP.getName()), Genre.HIPHOP.getValue())
+                .otherwise(Genre.UNKNOWN.getValue());
     }
 
     private Genre getGenre(Double value) {
