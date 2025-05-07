@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @PropertySource("classpath:spark.properties")
-@ComponentScan("org.danniles.driver.*")
+@ComponentScan("org.danniles.driver")
 public class SparkContextConfiguration {
 
     @Bean
@@ -21,6 +21,7 @@ public class SparkContextConfiguration {
                 .setMaster(master)
                 .setAppName(applicationName)
                 .setJars(distributedLibraries)
+                .set("spark.ui.enabled", "false")
                 .set("spark.cores.max", coresMax)
                 .set("spark.driver.memory", driverMemory)
                 .set("spark.executor.memory", executorMemory)

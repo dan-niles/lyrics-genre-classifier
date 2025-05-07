@@ -5,41 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="733cb2bd-62be-4ea3-a676-527985e7e6a1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/api/controller/LyricsController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/api/service/Word2VecService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/Genre.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/GenrePrediction.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/GenrePrediction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/MLService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/MLService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/SparkContextConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/SparkContextConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/mnist/MNISTImageFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/mnist/MNISTImageFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/mnist/MNISTLabelFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/mnist/MNISTLabelFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/mnist/MnistUtilityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/mnist/MnistUtilityService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/CommonLyricsPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/CommonLyricsPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/FeedForwardNeuralNetworkPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/FeedForwardNeuralNetworkPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/LogisticRegressionPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/LogisticRegressionPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/LyricsPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/LyricsPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/NaiveBayesBagOfWordsPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/NaiveBayesBagOfWordsPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/NaiveBayesTFIDFPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/NaiveBayesTFIDFPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/RandomForestPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/RandomForestPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/pipeline/Word2VecPipeline.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/pipeline/Word2VecPipeline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Cleanser.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Cleanser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Exploder.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Exploder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Numerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Numerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Stemmer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Stemmer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Uniter.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Uniter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/transformer/Verser.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/transformer/Verser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/word2vec/Similarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/word2vec/Similarity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/word2vec/Synonym.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/word2vec/Synonym.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spark-library/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spark-library/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/ApplicationConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/api/ApplicationConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/controller/LyricsController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/controller/Word2VecController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/api/controller/Word2VecController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/service/LyricsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/api/service/LyricsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-api/src/main/java/org/danniles/service/Word2VecService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/SparkContextConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/spark-driver/src/main/java/org/danniles/driver/SparkContextConfiguration.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
