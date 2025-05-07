@@ -77,7 +77,7 @@ public class MLService {
         // Shows predictions for test set.
         Dataset<Row> predictions = linearRegressionModel.transform(testSet);
 
-        Row predictedRow = predictions.select("features", "genre", "prediction").first();
+        Row predictedRow = predictions.select("features", "label", "prediction").first();
         System.out.println("(" + predictedRow.get(0) + ", " + predictedRow.get(1) + ", prediction=" + predictedRow.get(2));
     }
 

@@ -35,6 +35,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Create a temporary view of the dataset for use in other methods
         lyricsDataset.createOrReplaceTempView("lyrics_dataset");
 
+        lyricsDataset.show(5);
+
         // Get the number of genres from the Genre enum (excluding UNKNOWN)
         int numGenres = Genre.values().length - 1; // Subtract 1 to exclude UNKNOWN
         System.out.println("Number of genres to classify: " + numGenres);
@@ -145,7 +147,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         try {
             Dataset<Row> currentData = sparkSession.table("lyrics_dataset");
             if (currentData != null) {
-                Dataset<Row> genreCounts = currentData.groupBy("genre").count().orderBy("count");
+                Dataset<Row> genreCounts = currentData.groupBy(LABEL.getName()).count().orderBy("count");
                 modelStatistics.put("Genre distribution", genreCounts.collectAsList());
             }
         } catch (Exception e) {

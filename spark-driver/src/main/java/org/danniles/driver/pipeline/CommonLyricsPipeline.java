@@ -4,15 +4,11 @@ import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.linalg.DenseVector;
 import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 import org.danniles.driver.Genre;
 import org.danniles.driver.GenrePrediction;
 import org.danniles.driver.MLService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,17 +65,6 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
     }
 
     Dataset<Row> readLyrics() {
-        sparkSession.catalog().clearCache();
-
-        // Define explicit schema for the required columns
-        StructType schema = DataTypes.createStructType(new StructField[] {
-                DataTypes.createStructField("", DataTypes.StringType, true),
-                DataTypes.createStructField("artist_name", DataTypes.StringType, true),
-                DataTypes.createStructField("track_name", DataTypes.StringType, true),
-                DataTypes.createStructField("release_date", DataTypes.StringType, true),
-                DataTypes.createStructField("genre", DataTypes.StringType, true),
-                DataTypes.createStructField("lyrics", DataTypes.StringType, true)
-        });
 
         // Read CSV with defined schema and options
         Dataset<Row> rawData = sparkSession.read()
@@ -89,10 +74,8 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
                 .option("multiLine", "true") // Handle multi-line lyrics fields
                 .csv(lyricsTrainingSetDirectoryPath)
                 .select(
-                    col("artist_name"),
-                    col("track_name"),
                     col("release_date"),
-                    col("genre"),
+                    col(GENRE.getName()),
                     col("lyrics")
                 );
 
@@ -101,30 +84,35 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
 
         // Filter out records with null or empty lyrics
         Dataset<Row> filteredData = rawData
-                .filter(col("lyrics").isNotNull().and(length(trim(col("lyrics"))).gt(0)));
+                .filter(col("lyrics").isNotNull().and(length(trim(col("lyrics"))).gt(0)))
+                .withColumn("year", col("release_date").cast("integer"))
+                .drop("release_date");
+
+        System.out.println("Sample of filtered table:");
+        filteredData.show(5);
 
         // Convert genre column to numeric label for ML
         Dataset<Row> labeledData = filteredData
-                .withColumn(LABEL.getName(), genreToLabel(filteredData.col("genre")))
+                .withColumn(LABEL.getName(), genreToLabel(filteredData.col(GENRE.getName())))
                 .withColumn(ID.getName(), functions.monotonically_increasing_id().cast("string"));
 
         System.out.println("Final columns: " + Arrays.toString(labeledData.columns()));
 
         System.out.println("Sample of label column:");
-        labeledData.select(LABEL.getName()).show(5);
+        labeledData.show(5);
 
         // Cache the dataset for performance
         return labeledData.coalesce(sparkSession.sparkContext().defaultMinPartitions()).cache();
     }
 
     private Column genreToLabel(Column genreCol) {
-        return when(col(LABEL.getName()).equalTo(Genre.POP.getName()), Genre.POP.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.COUNTRY.getName()), Genre.COUNTRY.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.BLUES.getName()), Genre.BLUES.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.JAZZ.getName()), Genre.JAZZ.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.REGGAE.getName()), Genre.REGGAE.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.ROCK.getName()), Genre.ROCK.getValue())
-                .when(col(LABEL.getName()).equalTo(Genre.HIPHOP.getName()), Genre.HIPHOP.getValue())
+        return when(col(GENRE.getName()).equalTo(Genre.POP.getName()), Genre.POP.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.COUNTRY.getName()), Genre.COUNTRY.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.BLUES.getName()), Genre.BLUES.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.JAZZ.getName()), Genre.JAZZ.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.REGGAE.getName()), Genre.REGGAE.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.ROCK.getName()), Genre.ROCK.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.HIPHOP.getName()), Genre.HIPHOP.getValue())
                 .otherwise(Genre.UNKNOWN.getValue());
     }
 
@@ -134,7 +122,6 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
                 return genre;
             }
         }
-
         return Genre.UNKNOWN;
     }
 
