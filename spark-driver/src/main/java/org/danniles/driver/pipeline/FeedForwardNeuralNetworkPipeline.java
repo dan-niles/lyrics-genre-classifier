@@ -77,18 +77,19 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Word2Vec word2Vec = new Word2Vec()
                 .setInputCol(Column.VERSE.getName())
                 .setOutputCol("features")
-                .setMinCount(5)
+                .setMinCount(3)
                 .setWindowSize(10)
                 .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
         // The output layer size should match the number of genres
-        int[] layers = new int[]{300, 128, numGenres};
+        int[] layers = new int[]{300, 256, 128, 64, numGenres};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
                 .setBlockSize(128)
                 .setSeed(SEED)
-                .setLayers(layers);
+                .setLayers(layers)
+                .setStepSize(0.01);
 
         Pipeline pipeline = new Pipeline().setStages(
                 new PipelineStage[]{
@@ -106,7 +107,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{16})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[]{400})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[]{1000})
                 .build();
 
         // Use multiclass evaluator with the proper number of classes
