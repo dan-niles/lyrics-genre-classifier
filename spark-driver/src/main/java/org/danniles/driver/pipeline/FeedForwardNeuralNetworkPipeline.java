@@ -35,7 +35,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Create a temporary view of the dataset for use in other methods
         lyricsDataset.createOrReplaceTempView("lyrics_dataset");
 
-        lyricsDataset.show(5);
+        System.out.println("Dataset Schema: ");
+        lyricsDataset.printSchema();
 
         // Get the number of genres from the Genre enum (excluding UNKNOWN)
         int numGenres = Genre.values().length - 1; // Subtract 1 to exclude UNKNOWN
@@ -70,7 +71,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Word2Vec word2Vec = new Word2Vec()
                 .setInputCol(Column.VERSE.getName())
                 .setOutputCol("features")
-                .setMinCount(0);
+                .setMinCount(0)
+                .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
         // The output layer size should match the number of genres (7 genres + UNKNOWN)
@@ -97,7 +99,6 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{16, 24})
-                .addGrid(word2Vec.vectorSize(), new int[] {300, 400})
                 .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {100, 200})
                 .build();
 
@@ -118,12 +119,20 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setEstimator(pipeline)
                 .setEvaluator(evaluator)
                 .setEstimatorParamMaps(paramGrid)
+                .setSeed(1234L)
                 .setNumFolds(10);
+
+        System.out.println("Unique label values:");
+        lyricsDataset.groupBy("label").count().show();
 
         // Run cross-validation, and choose the best set of parameters.
         CrossValidatorModel model = crossValidator.fit(lyricsDataset);
 
+        System.out.println("Model Training Completed!");
+
         saveModel(model, getModelDirectory());
+
+        System.out.println("Model Saved in " + getModelDirectory());
 
         return model;
     }

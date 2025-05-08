@@ -30,6 +30,7 @@ public class SparkContextConfiguration {
                 .set("spark.kryo.registrationRequired", "false")
                 .set("spark.kryo.unsafe", "true")
                 .set("spark.sql.shuffle.partitions", sqlShufflePartitions)
+                .set("spark.memory.fraction", "0.8")
                 .set("spark.default.parallelism", defaultParallelism);
 
         SparkContext sparkContext = new SparkContext(sparkConf);
