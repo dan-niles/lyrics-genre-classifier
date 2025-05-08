@@ -77,8 +77,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Word2Vec word2Vec = new Word2Vec()
                 .setInputCol(Column.VERSE.getName())
                 .setOutputCol("features")
-                .setMinCount(3)
-                .setWindowSize(10)
+                .setMinCount(2)
+                .setWindowSize(15)
                 .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
@@ -89,6 +89,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setBlockSize(128)
                 .setSeed(SEED)
                 .setLayers(layers)
+                .setTol(1e-5)
                 .setStepSize(0.01);
 
         Pipeline pipeline = new Pipeline().setStages(
