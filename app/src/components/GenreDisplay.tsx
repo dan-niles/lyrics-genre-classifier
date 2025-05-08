@@ -1,18 +1,25 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { GenrePrediction } from "@/services/api";
-
+import { Spinner } from "./ui/spinner";
 interface GenreDisplayProps {
 	prediction: GenrePrediction | null;
+	isLoading: boolean;
 }
 
-const GenreDisplay: React.FC<GenreDisplayProps> = ({ prediction }) => {
+const GenreDisplay: React.FC<GenreDisplayProps> = ({
+	prediction,
+	isLoading,
+}) => {
 	if (!prediction) {
 		return (
 			<Card className="card-gradient p-6 flex flex-col items-center justify-center space-y-2 min-h-[120px]">
-				<p className="text-muted-foreground text-center">
-					Enter lyrics to get genre prediction
-				</p>
+				{isLoading && <Spinner className="h-6 w-6 text-muted-foreground" />}
+				{!isLoading && (
+					<p className="text-muted-foreground text-center">
+						Enter lyrics to get genre prediction
+					</p>
+				)}
 			</Card>
 		);
 	}
@@ -54,6 +61,14 @@ const GenreDisplay: React.FC<GenreDisplayProps> = ({ prediction }) => {
 		genreColorMap[prediction.genre.toLowerCase()] || "bg-primary";
 	const confidence =
 		prediction[genreProbabilityMap[prediction.genre.toLowerCase()]] * 100;
+
+	if (isLoading) {
+		return (
+			<Card className="card-gradient p-6 flex flex-col items-center justify-center space-y-2 min-h-[120px]">
+				<Spinner className="h-6 w-6 text-muted-foreground" />
+			</Card>
+		);
+	}
 
 	return (
 		<Card className="card-gradient p-6 flex flex-col space-y-4">

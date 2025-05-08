@@ -10,10 +10,12 @@ import {
 
 interface LyricsAnalysisStatsProps {
 	lyrics: string | null;
+	isLoading: boolean;
 }
 
 const LyricsAnalysisStats: React.FC<LyricsAnalysisStatsProps> = ({
 	lyrics,
+	isLoading,
 }) => {
 	const stats = useMemo(() => {
 		if (!lyrics) return null;
@@ -48,7 +50,7 @@ const LyricsAnalysisStats: React.FC<LyricsAnalysisStatsProps> = ({
 		};
 	}, [lyrics]);
 
-	if (!stats) {
+	if (!stats || isLoading) {
 		return <></>;
 	}
 

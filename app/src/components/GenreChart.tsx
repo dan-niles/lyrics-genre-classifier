@@ -5,16 +5,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartBarIcon, ChartPieIcon } from "lucide-react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import { Spinner } from "./ui/spinner";
 
 interface GenreChartProps {
 	prediction: GenrePrediction | null;
+	isLoading: boolean;
 }
 
-const GenreChart: React.FC<GenreChartProps> = ({ prediction }) => {
+const GenreChart: React.FC<GenreChartProps> = ({ prediction, isLoading }) => {
 	if (!prediction) {
 		return (
 			<Card className="card-gradient p-6 flex items-center justify-center min-h-[320px]">
-				<p className="text-muted-foreground">No data to display</p>
+				{isLoading && <Spinner className="h-6 w-6 text-muted-foreground" />}
+				{!isLoading && (
+					<p className="text-muted-foreground">No data to display</p>
+				)}
 			</Card>
 		);
 	}
@@ -63,6 +68,14 @@ const GenreChart: React.FC<GenreChartProps> = ({ prediction }) => {
 		}
 		return null;
 	};
+
+	if (isLoading) {
+		return (
+			<Card className="card-gradient p-6 flex items-center justify-center min-h-[320px]">
+				<Spinner className="h-6 w-6 text-muted-foreground" />
+			</Card>
+		);
+	}
 
 	return (
 		<Card className="card-gradient p-6">

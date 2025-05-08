@@ -39,13 +39,13 @@ const Index: React.FC = () => {
 					{/* Input Section */}
 					<Card className="card-gradient p-6 pb-4 lg:col-span-1">
 						<LyricsInput onSubmit={handleLyricsSubmit} isLoading={isLoading} />
-						<LyricsAnalysisStats lyrics={currentLyrics} />
+						<LyricsAnalysisStats lyrics={currentLyrics} isLoading={isLoading} />
 					</Card>
 
 					{/* Results Section */}
 					<div className="lg:col-span-2 space-y-6">
-						<GenreDisplay prediction={prediction} />
-						<GenreChart prediction={prediction} />
+						<GenreDisplay prediction={prediction} isLoading={isLoading} />
+						<GenreChart prediction={prediction} isLoading={isLoading} />
 					</div>
 				</div>
 			</div>
