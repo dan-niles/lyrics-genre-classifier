@@ -1,7 +1,7 @@
 package org.danniles.api.service;
 
 import jakarta.annotation.Resource;
-import org.apache.spark.ml.tuning.CrossValidatorModel;
+import org.apache.spark.ml.PipelineModel;
 import org.danniles.driver.GenrePrediction;
 import org.danniles.driver.pipeline.LyricsPipeline;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class LyricsService {
     private LyricsPipeline pipeline;
 
     public Map<String, Object> classifyLyrics() {
-        CrossValidatorModel model = pipeline.classify();
+        PipelineModel model = pipeline.classify();
         return pipeline.getModelStatistics(model);
     }
 

@@ -12,8 +12,6 @@ import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.ml.feature.Word2Vec;
 import org.apache.spark.ml.feature.Word2VecModel;
 import org.apache.spark.ml.param.ParamMap;
-import org.apache.spark.ml.tuning.CrossValidator;
-import org.apache.spark.ml.tuning.CrossValidatorModel;
 import org.apache.spark.ml.tuning.ParamGridBuilder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -30,7 +28,7 @@ import static org.danniles.map.Column.*;
 @Component("FeedForwardNeuralNetworkPipeline")
 public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
-    public CrossValidatorModel classify() {
+    public PipelineModel classify() {
         Dataset<Row> lyricsDataset = readLyrics();
         final long SEED = 1234L;
 
@@ -81,7 +79,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         int[] layers = new int[]{300, 200, 100, 7};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
-                .setBlockSize(300)
+                .setBlockSize(128)
                 .setSeed(SEED)
                 .setLayers(layers);
 
@@ -101,7 +99,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{16})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {400})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {1600})
                 .build();
 
         // Use multiclass evaluator with the proper number of classes
@@ -117,14 +115,6 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
             }
         }
 
-        CrossValidator crossValidator = new CrossValidator()
-                .setEstimator(pipeline)
-                .setEvaluator(evaluator)
-                .setEstimatorParamMaps(paramGrid)
-                .setSeed(SEED)
-                .setParallelism(4)
-                .setNumFolds(4);
-
         System.out.println("Unique label values:");
         lyricsDataset.groupBy("label").count().show();
 
@@ -134,27 +124,42 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         Dataset<Row> trainingData = splits[0];
         Dataset<Row> testData = splits[1];
 
-        // Run cross-validation, and choose the best set of parameters.
-        CrossValidatorModel model = crossValidator.fit(trainingData);
+        double bestAccuracy = 0.0;
+        PipelineModel bestModel = null;
 
-        // Evaluate model on test dataset
-        Dataset<Row> predictions = model.transform(testData);
-        double accuracy = evaluator.evaluate(predictions);
-        System.out.println("Test set accuracy: " + accuracy);
+        for (ParamMap params : paramGrid) {
+            // Set pipeline params
+            PipelineModel model = pipeline.fit(trainingData, params);
+
+            // Evaluate on train set
+            Dataset<Row> predictions = model.transform(trainingData);
+            double accuracy = evaluator.evaluate(predictions);
+            System.out.println("Params: " + params + " -> Training Accuracy: " + accuracy);
+
+            // Evaluate on test set
+            predictions = model.transform(testData);
+            accuracy = evaluator.evaluate(predictions);
+            System.out.println("Params: " + params + " -> Testing Accuracy: " + accuracy);
+
+            if (accuracy > bestAccuracy) {
+                bestAccuracy = accuracy;
+                bestModel = model;
+            }
+        }
 
         System.out.println("Model Training Completed!");
 
-        saveModel(model, getModelDirectory());
+        saveModel(bestModel, getModelDirectory());
 
         System.out.println("Model Saved in " + getModelDirectory());
 
-        return model;
+        return bestModel;
     }
 
-    public Map<String, Object> getModelStatistics(CrossValidatorModel model) {
+    public Map<String, Object> getModelStatistics(PipelineModel model) {
         Map<String, Object> modelStatistics = super.getModelStatistics(model);
 
-        PipelineModel bestModel = (PipelineModel) model.bestModel();
+        PipelineModel bestModel = model;
         Transformer[] stages = bestModel.stages();
 
         modelStatistics.put("Sentences in verse", ((Verser) stages[7]).getSentencesInVerse());

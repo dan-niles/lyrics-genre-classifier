@@ -1,7 +1,8 @@
 
 package org.danniles.map.snowball;
-import java.lang.reflect.InvocationTargetException;
+
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 public class SnowballProgram implements Serializable {
     protected SnowballProgram()

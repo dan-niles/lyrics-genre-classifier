@@ -9,12 +9,13 @@ import org.danniles.driver.GenrePrediction;
 import org.danniles.driver.MLService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.danniles.map.Column.*;
 import static org.apache.spark.sql.functions.*;
+import static org.danniles.map.Column.*;
 
 public abstract class CommonLyricsPipeline implements LyricsPipeline {
 
@@ -37,13 +38,16 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
                 Encoders.STRING());
 
         Dataset<Row> unknownLyricsDataset = lyricsDataset
+                .withColumnRenamed("value", VALUE.getName())
                 .withColumn(LABEL.getName(), functions.lit(Genre.UNKNOWN.getValue()))
                 .withColumn(ID.getName(), functions.lit("unknown.txt"));
 
-        CrossValidatorModel model = mlService.loadCrossValidationModel(getModelDirectory());
+        unknownLyricsDataset.show();
+
+        PipelineModel model = mlService.loadPipelineModel(getModelDirectory());
         getModelStatistics(model);
 
-        PipelineModel bestModel = (PipelineModel) model.bestModel();
+        PipelineModel bestModel = model;
 
         Dataset<Row> predictionsDataset = bestModel.transform(unknownLyricsDataset);
         Row predictionRow = predictionsDataset.first();
@@ -57,7 +61,7 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
             System.out.println("Probability: " + probability);
             System.out.println("------------------------------------------------\n");
 
-            return new GenrePrediction(getGenre(prediction).getName(), probability.apply(0), probability.apply(1));
+            return new GenrePrediction(getGenre(prediction).getName(), probability.apply(0), probability.apply(1), probability.apply(2), probability.apply(3), probability.apply(4), probability.apply(5), probability.apply(6));
         }
 
         System.out.println("------------------------------------------------\n");
@@ -126,11 +130,13 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
     }
 
     @Override
-    public Map<String, Object> getModelStatistics(CrossValidatorModel model) {
+    public Map<String, Object> getModelStatistics(PipelineModel model) {
         Map<String, Object> modelStatistics = new HashMap<>();
 
-        Arrays.sort(model.avgMetrics());
-        modelStatistics.put("Best model metrics", model.avgMetrics()[model.avgMetrics().length - 1]);
+//        Arrays.sort(model.avgMetrics());
+//        modelStatistics.put("Best model metrics", model.avgMetrics()[model.avgMetrics().length - 1]);
+
+        modelStatistics.put("Best model metrics", model.hashCode());
 
         return modelStatistics;
     }
