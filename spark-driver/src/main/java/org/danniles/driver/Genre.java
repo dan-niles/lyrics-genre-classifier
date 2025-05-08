@@ -19,7 +19,7 @@ public enum Genre {
 
     HIPHOP("hip hop", 6D),
 
-    RNB("rnb", 6D),
+    RNB("rnb", 7D),
 
     UNKNOWN("Don't know :(", -1D);
 
