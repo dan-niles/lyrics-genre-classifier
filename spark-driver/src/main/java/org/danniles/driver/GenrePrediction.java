@@ -10,8 +10,9 @@ public class GenrePrediction {
     private Double reggaeProbability;
     private Double rockProbability;
     private Double hipHopProbability;
+    private Double rnbProbability;
 
-    public GenrePrediction(String genre, Double popProbability, Double countryProbability, Double bluesProbability, Double jazzProbability, Double reggaeProbability, Double rockProbability, Double hipHopProbability ) {
+    public GenrePrediction(String genre, Double popProbability, Double countryProbability, Double bluesProbability, Double jazzProbability, Double reggaeProbability, Double rockProbability, Double hipHopProbability, Double rnbProbability ) {
         this.genre = genre;
         this.popProbability = popProbability;
         this.countryProbability = countryProbability;
@@ -20,6 +21,7 @@ public class GenrePrediction {
         this.reggaeProbability = reggaeProbability;
         this.rockProbability = rockProbability;
         this.hipHopProbability = hipHopProbability;
+        this.rnbProbability = rnbProbability;
     }
 
     public GenrePrediction(String genre) {
@@ -60,5 +62,9 @@ public class GenrePrediction {
 
     public Double getHipHopProbability() {
         return hipHopProbability;
+    }
+
+    public Double getRnbProbability() {
+        return rnbProbability;
     }
 }

@@ -20,8 +20,10 @@ import org.danniles.driver.transformer.*;
 import org.danniles.map.Column;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
@@ -76,7 +78,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setInputCol(Column.VERSE.getName())
                 .setOutputCol("features")
                 .setMinCount(0)
-                .setWindowSize(5)
+                .setWindowSize(10)
                 .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
@@ -84,7 +86,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         int[] layers = new int[]{300, 256, 128, 7};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
-                .setBlockSize(128)
+                .setBlockSize(256)
                 .setSeed(SEED)
                 .setLayers(layers);
 
@@ -104,7 +106,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
                 .addGrid(verser.sentencesInVerse(), new int[]{16})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {1600})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[]{3000})
                 .build();
 
         // Use multiclass evaluator with the proper number of classes
@@ -132,47 +134,63 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         double bestAccuracy = 0.0;
         PipelineModel bestModel = null;
 
+        double trainAccuracy = 0;
+        double testAccuracy = 0;
         for (ParamMap params : paramGrid) {
             // Set pipeline params
             PipelineModel model = pipeline.fit(trainingData, params);
 
             // Evaluate on train set
             Dataset<Row> predictions = model.transform(trainingData);
-            double trainAccuracy  = evaluator.evaluate(predictions);
+            trainAccuracy = evaluator.evaluate(predictions);
             System.out.println("Params: " + params + " -> Training Accuracy: " + trainAccuracy);
 
             // Evaluate on test set
             predictions = model.transform(testData);
-            double testAccuracy = evaluator.evaluate(predictions);
+            testAccuracy = evaluator.evaluate(predictions);
             System.out.println("Params: " + params + " -> Testing Accuracy: " + testAccuracy);
 
             if (testAccuracy > bestAccuracy) {
-                String stats = "Final Training Accuracy: " + trainAccuracy + System.lineSeparator() + "Final Testing Accuracy: " + testAccuracy + System.lineSeparator();
-
-                try {
-                    String modelDir = getModelDirectory();
-                    Files.createDirectories(Paths.get(modelDir)); // ensure directory exists
-                    Files.write(
-                            Paths.get(modelDir, "model_accuracy.txt"),
-                            stats.getBytes(),
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING
-                    );
-                    System.out.println("Accuracy stats written to " + modelDir + "model_accuracy.txt");
-                } catch (IOException e) {
-                    System.err.println("Failed to write accuracy stats: " + e.getMessage());
-                }
-
                 bestAccuracy = testAccuracy;
                 bestModel = model;
             }
         }
 
-
-
         System.out.println("Model Training Completed!");
         saveModel(bestModel, getModelDirectory());
         System.out.println("Model Saved in " + getModelDirectory());
+
+        String stats = "Final Training Accuracy: " + trainAccuracy + System.lineSeparator() + "Final Testing Accuracy: " + testAccuracy + System.lineSeparator();
+
+        try {
+            String modelDir = getModelDirectory();
+            Path modelDirPath = Paths.get(modelDir);
+
+            // Create directories if they don't exist
+            if (!Files.exists(modelDirPath)) {
+                Files.createDirectories(modelDirPath);
+            }
+
+            // Ensure path ends with proper separator and append filename
+            if (!modelDir.endsWith(File.separator)) {
+                modelDir += File.separator;
+            }
+
+            Path accuracyFile = Paths.get(modelDir + "model_accuracy.txt");
+
+            // Write the stats to the file
+            Files.write(
+                    accuracyFile,
+                    stats.getBytes(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            );
+
+            System.out.println("Accuracy stats successfully written to " + accuracyFile.toString());
+            System.out.println(stats);
+        } catch (IOException e) {
+            System.err.println("Failed to write accuracy stats: " + e.getMessage());
+        }
 
         return bestModel;
     }
@@ -180,8 +198,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
     public Map<String, Object> getModelStatistics(PipelineModel model) {
         Map<String, Object> modelStatistics = super.getModelStatistics(model);
 
-        PipelineModel bestModel = model;
-        Transformer[] stages = bestModel.stages();
+        Transformer[] stages = model.stages();
 
         modelStatistics.put("Sentences in verse", ((Verser) stages[7]).getSentencesInVerse());
         modelStatistics.put("Word2Vec vocabulary", ((Word2VecModel) stages[8]).getVectors().count());

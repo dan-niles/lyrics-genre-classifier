@@ -59,7 +59,7 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
             System.out.println("Probability: " + probability);
             System.out.println("------------------------------------------------\n");
 
-            return new GenrePrediction(getGenre(prediction).getName(), probability.apply(0), probability.apply(1), probability.apply(2), probability.apply(3), probability.apply(4), probability.apply(5), probability.apply(6));
+            return new GenrePrediction(getGenre(prediction).getName(), probability.apply(0), probability.apply(1), probability.apply(2), probability.apply(3), probability.apply(4), probability.apply(5), probability.apply(6), probability.apply(7));
         }
 
         System.out.println("------------------------------------------------\n");
@@ -115,6 +115,7 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
                 .when(col(GENRE.getName()).equalTo(Genre.REGGAE.getName()), Genre.REGGAE.getValue())
                 .when(col(GENRE.getName()).equalTo(Genre.ROCK.getName()), Genre.ROCK.getValue())
                 .when(col(GENRE.getName()).equalTo(Genre.HIPHOP.getName()), Genre.HIPHOP.getValue())
+                .when(col(GENRE.getName()).equalTo(Genre.RNB.getName()), Genre.RNB.getValue())
                 .otherwise(Genre.UNKNOWN.getValue());
     }
 

@@ -19,6 +19,8 @@ public enum Genre {
 
     HIPHOP("hip hop", 6D),
 
+    RNB("rnb", 6D),
+
     UNKNOWN("Don't know :(", -1D);
 
     private final String name;
