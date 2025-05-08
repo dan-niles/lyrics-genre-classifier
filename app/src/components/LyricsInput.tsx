@@ -24,13 +24,13 @@ const LyricsInput: React.FC<LyricsInputProps> = ({ onSubmit, isLoading }) => {
 	};
 
 	const sampleLyrics = {
-		pop: "Baby, I'm dancing in the dark\nWith you between my arms\nBarefoot on the grass\nListening to our favorite song\nWhen you said you looked a mess\nI whispered underneath my breath\nBut you heard it, darling\nYou look perfect tonight",
-		rock: "I see a red door\nAnd I want it painted black\nNo colors anymore\nI want them to turn black\nI see the girls walk by\nDressed in their summer clothes\nI have to turn my head\nUntil my darkness goes",
+		pop: "settle cover cuddle hold arm heart chest lips press neck fall eye know feel forget kiss like wanna love wanna love wanna love feel like fall fall fall settle safety lady body warm cold wind blow hold arm heart chest lips press neck fall eye know feel forget kiss like wanna love wanna love wanna love feel like fall fall fall yeah feel hate truth guess know hold close help kiss like wanna love wanna love wanna love feel like fall fall fall kiss like wanna love wanna love wanna love feel like fall fall fall",
+		rock: "close city tell people come death darkness rush forward bite wall break away listen fool rule rule kill spirit blind play burn finger lose hold flame begin listen fool rule break away listen fool break circle stop movement wheel throw grind remember start roll right fool rule",
 		hiphop:
-			"His palms are sweaty, knees weak, arms are heavy\nThere's vomit on his sweater already, mom's spaghetti\nHe's nervous, but on the surface he looks calm and ready\nTo drop bombs, but he keeps on forgetting",
-		jazz: "Fly me to the moon\nLet me play among the stars\nLet me see what spring is like\nOn Jupiter and Mars\nIn other words, hold my hand\nIn other words, baby, kiss me",
+			"walk valley death look life realize leave blastin laughin long mama think mind go cross deserve treat like punk know unheard better watch talkin walkin homies line chalk hate gotta grow pistol smoke fool kinda little homies wanna like knees night sayin prayers streetlight spendin live livin gangsta paradise spendin live livin gangsta paradise spendin live livin gangsta paradise spendin live livin gangsta paradise situation facin lyric commercial",
+		jazz: "Fly me to the moon Let me play among the stars Let me see what spring is like On Jupiter and Mars In other words, hold my hand In other words, baby, kiss me. Fill my heart with song And let me sing forevermore You are all I long for All I worship and adore In other words, please be true In other words, I love you",
 		country:
-			"I've been a walking heartache\nI've made a mess of me\nThe person that I've been lately\nAin't who I wanna be\nBut you stay here right beside me\nWatch as the storm blows through\nAnd I need you",
+			"walk world share dream need life search look long long time horizions come hand walk world walk world share dream search horizions come hand walk world come hand walk world",
 	};
 
 	const fillSampleLyrics = (genre: keyof typeof sampleLyrics) => {
