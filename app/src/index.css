@@ -1,0 +1,71 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 10% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 10% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 10% 20%;
+
+    --primary: 24 95% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 30 30% 96%;
+    --secondary-foreground: 215 10% 20%;
+
+    --muted: 30 30% 96%;
+    --muted-foreground: 215 10% 40%;
+
+    --accent: 24 95% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 20 10% 90%;
+    --input: 20 10% 90%;
+    --ring: 24 95% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 24 95% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    @apply bg-white text-foreground;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .card-gradient {
+    @apply bg-gradient-to-br from-secondary/90 to-white/80 shadow-sm border border-border/50;
+  }
+
+  .input-gradient {
+    @apply bg-gradient-to-b from-secondary/80 to-white/70 border border-border/50;
+  }
+}
