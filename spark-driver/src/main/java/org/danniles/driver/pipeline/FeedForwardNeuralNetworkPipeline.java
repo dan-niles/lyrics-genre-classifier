@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static org.apache.spark.sql.functions.rand;
 import static org.danniles.map.Column.*;
 
 @Component("FeedForwardNeuralNetworkPipeline")
@@ -31,6 +32,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
     public CrossValidatorModel classify() {
         Dataset<Row> lyricsDataset = readLyrics();
+        final long SEED = 1234L;
 
         // Create a temporary view of the dataset for use in other methods
         lyricsDataset.createOrReplaceTempView("lyrics_dataset");
@@ -75,12 +77,12 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
-        // The output layer size should match the number of genres (7 genres + UNKNOWN)
-        int[] layers = new int[]{300, 100, numGenres};
+        // The output layer size should match the number of genres
+        int[] layers = new int[]{300, 200, 100, 7};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
                 .setBlockSize(300)
-                .setSeed(1234L)
+                .setSeed(SEED)
                 .setLayers(layers);
 
         Pipeline pipeline = new Pipeline().setStages(
@@ -98,8 +100,8 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
         // Use a ParamGridBuilder to construct a grid of parameters to search over.
         ParamMap[] paramGrid = new ParamGridBuilder()
-                .addGrid(verser.sentencesInVerse(), new int[]{16, 24})
-                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {100, 200})
+                .addGrid(verser.sentencesInVerse(), new int[]{16})
+                .addGrid(multilayerPerceptronClassifier.maxIter(), new int[] {400})
                 .build();
 
         // Use multiclass evaluator with the proper number of classes
@@ -119,14 +121,26 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setEstimator(pipeline)
                 .setEvaluator(evaluator)
                 .setEstimatorParamMaps(paramGrid)
-                .setSeed(1234L)
-                .setNumFolds(10);
+                .setSeed(SEED)
+                .setParallelism(4)
+                .setNumFolds(4);
 
         System.out.println("Unique label values:");
         lyricsDataset.groupBy("label").count().show();
 
+        // Split dataset (80-20)
+        Dataset<Row> shuffled = lyricsDataset.orderBy(rand(1234L));
+        Dataset<Row>[] splits = shuffled.randomSplit(new double[]{0.8, 0.2}, SEED);
+        Dataset<Row> trainingData = splits[0];
+        Dataset<Row> testData = splits[1];
+
         // Run cross-validation, and choose the best set of parameters.
-        CrossValidatorModel model = crossValidator.fit(lyricsDataset);
+        CrossValidatorModel model = crossValidator.fit(trainingData);
+
+        // Evaluate model on test dataset
+        Dataset<Row> predictions = model.transform(testData);
+        double accuracy = evaluator.evaluate(predictions);
+        System.out.println("Test set accuracy: " + accuracy);
 
         System.out.println("Model Training Completed!");
 
