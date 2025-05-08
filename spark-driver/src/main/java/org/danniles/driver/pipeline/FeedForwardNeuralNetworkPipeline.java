@@ -20,6 +20,10 @@ import org.danniles.driver.transformer.*;
 import org.danniles.map.Column;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 import static org.apache.spark.sql.functions.rand;
@@ -72,11 +76,12 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setInputCol(Column.VERSE.getName())
                 .setOutputCol("features")
                 .setMinCount(0)
+                .setWindowSize(5)
                 .setVectorSize(300);
 
         // Configure the neural network for multi-class classification
         // The output layer size should match the number of genres
-        int[] layers = new int[]{300, 200, 100, 7};
+        int[] layers = new int[]{300, 256, 128, 7};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
                 .setBlockSize(128)
@@ -119,7 +124,7 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
         lyricsDataset.groupBy("label").count().show();
 
         // Split dataset (80-20)
-        Dataset<Row> shuffled = lyricsDataset.orderBy(rand(1234L));
+        Dataset<Row> shuffled = lyricsDataset.orderBy(rand(SEED));
         Dataset<Row>[] splits = shuffled.randomSplit(new double[]{0.8, 0.2}, SEED);
         Dataset<Row> trainingData = splits[0];
         Dataset<Row> testData = splits[1];
@@ -133,24 +138,40 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
 
             // Evaluate on train set
             Dataset<Row> predictions = model.transform(trainingData);
-            double accuracy = evaluator.evaluate(predictions);
-            System.out.println("Params: " + params + " -> Training Accuracy: " + accuracy);
+            double trainAccuracy  = evaluator.evaluate(predictions);
+            System.out.println("Params: " + params + " -> Training Accuracy: " + trainAccuracy);
 
             // Evaluate on test set
             predictions = model.transform(testData);
-            accuracy = evaluator.evaluate(predictions);
-            System.out.println("Params: " + params + " -> Testing Accuracy: " + accuracy);
+            double testAccuracy = evaluator.evaluate(predictions);
+            System.out.println("Params: " + params + " -> Testing Accuracy: " + testAccuracy);
 
-            if (accuracy > bestAccuracy) {
-                bestAccuracy = accuracy;
+            if (testAccuracy > bestAccuracy) {
+                String stats = "Final Training Accuracy: " + trainAccuracy + System.lineSeparator() + "Final Testing Accuracy: " + testAccuracy + System.lineSeparator();
+
+                try {
+                    String modelDir = getModelDirectory();
+                    Files.createDirectories(Paths.get(modelDir)); // ensure directory exists
+                    Files.write(
+                            Paths.get(modelDir, "model_accuracy.txt"),
+                            stats.getBytes(),
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING
+                    );
+                    System.out.println("Accuracy stats written to " + modelDir + "model_accuracy.txt");
+                } catch (IOException e) {
+                    System.err.println("Failed to write accuracy stats: " + e.getMessage());
+                }
+
+                bestAccuracy = testAccuracy;
                 bestModel = model;
             }
         }
 
+
+
         System.out.println("Model Training Completed!");
-
         saveModel(bestModel, getModelDirectory());
-
         System.out.println("Model Saved in " + getModelDirectory());
 
         return bestModel;

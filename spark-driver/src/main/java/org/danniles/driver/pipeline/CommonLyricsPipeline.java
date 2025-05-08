@@ -47,9 +47,7 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
         PipelineModel model = mlService.loadPipelineModel(getModelDirectory());
         getModelStatistics(model);
 
-        PipelineModel bestModel = model;
-
-        Dataset<Row> predictionsDataset = bestModel.transform(unknownLyricsDataset);
+        Dataset<Row> predictionsDataset = model.transform(unknownLyricsDataset);
         Row predictionRow = predictionsDataset.first();
 
         System.out.println("\n------------------------------------------------");
