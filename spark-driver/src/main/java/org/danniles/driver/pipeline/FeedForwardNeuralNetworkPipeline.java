@@ -79,17 +79,16 @@ public class FeedForwardNeuralNetworkPipeline extends CommonLyricsPipeline {
                 .setOutputCol("features")
                 .setMinCount(2)
                 .setWindowSize(15)
-                .setVectorSize(300);
+                .setVectorSize(400);
 
         // Configure the neural network for multi-class classification
         // The output layer size should match the number of genres
-        int[] layers = new int[]{300, 256, 128, 64, numGenres};
+        int[] layers = new int[]{400, 256, 128, 64, numGenres};
 
         MultilayerPerceptronClassifier multilayerPerceptronClassifier = new MultilayerPerceptronClassifier()
                 .setBlockSize(128)
                 .setSeed(SEED)
                 .setLayers(layers)
-                .setTol(1e-5)
                 .setStepSize(0.01);
 
         Pipeline pipeline = new Pipeline().setStages(
