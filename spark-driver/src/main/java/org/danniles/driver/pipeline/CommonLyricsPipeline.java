@@ -140,6 +140,15 @@ public abstract class CommonLyricsPipeline implements LyricsPipeline {
         return modelStatistics;
     }
 
+    public Map<String, Object> getModelStatistics(CrossValidatorModel model) {
+        Map<String, Object> modelStatistics = new HashMap<>();
+
+        Arrays.sort(model.avgMetrics());
+        modelStatistics.put("Best model metrics", model.avgMetrics()[model.avgMetrics().length - 1]);
+
+        return modelStatistics;
+    }
+
     void printModelStatistics(Map<String, Object> modelStatistics) {
         System.out.println("\n------------------------------------------------");
         System.out.println("Model statistics:");
