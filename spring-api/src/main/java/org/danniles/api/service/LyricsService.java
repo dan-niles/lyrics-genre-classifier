@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class LyricsService {
 
-    @Resource(name = "FeedForwardNeuralNetworkPipeline")
+    @Resource(name = "LogisticRegressionPipeline")
     private LyricsPipeline pipeline;
 
     public Map<String, Object> classifyLyrics() {
