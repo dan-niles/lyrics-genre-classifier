@@ -2,6 +2,8 @@
 
 This project extends the work of Taras Matyashovskyy by building a more robust music lyrics classification system using Apache Spark’s MLlib. While Taras’ original model could only classify “Pop” and “Metal,” this system can classify lyrics into eight distinct genres using a larger and more diverse dataset, a retrained ML pipeline, and an interactive web-based UI for visualization.
 
+![Project Screenshot](./img/ui.png)
+
 ## Project Overview
 
 Trained a machine learning pipeline using Spark MLlib to classify lyrics into the following genres:
